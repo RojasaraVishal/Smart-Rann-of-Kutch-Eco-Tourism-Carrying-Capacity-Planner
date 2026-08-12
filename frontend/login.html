@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — RANN AI</title>
+<link rel="stylesheet" href="public/styles.css">
+<style>
+  body { background: var(--bg-deep); display: flex; flex-direction: column; min-height: 100vh; }
+  .login-wrap {
+    flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 20px;
+  }
+  .login-box { width: 100%; max-width: 440px; }
+  .login-logo { text-align: center; margin-bottom: 32px; }
+  .login-logo .logo-mark {
+    width: 52px; height: 52px; margin: 0 auto 16px;
+    background: linear-gradient(135deg, var(--eco), var(--blue));
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; font-weight: 900; color: #080A0D;
+  }
+  .login-logo h1 { font-size: 1.3rem; font-weight: 900; margin-bottom: 4px; color: var(--silver-bright); }
+  .login-logo p  { color: var(--text-muted); font-size: 0.84rem; }
+  .auth-tabs {
+    display: flex; background: var(--surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow: hidden; border: 1px solid var(--border); border-bottom: none;
+  }
+  .auth-tab {
+    flex: 1; text-align: center; padding: 13px; cursor: pointer;
+    font-weight: 700; font-size: 0.87rem; color: var(--text-muted);
+    background: var(--surface); border: none; font-family: var(--font);
+    transition: all var(--t-fast);
+  }
+  .auth-tab.active { background: var(--card); color: var(--eco); border-bottom: 2px solid var(--eco); }
+  .auth-form-wrap {
+    background: var(--card); border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 28px;
+  }
+  .auth-form { display: none; }
+  .auth-form.active { display: block; }
+  .demo-creds {
+    background: var(--surface); border-radius: var(--radius-lg); padding: 16px;
+    margin-top: 20px; border: 1px solid var(--border);
+  }
+  .demo-creds-title { font-weight: 700; font-size: 0.83rem; margin-bottom: 10px; color: var(--silver); }
+  .demo-cred {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.81rem;
+    color: var(--text-secondary);
+  }
+  .demo-cred:last-child { border-bottom: none; }
+  .demo-cred code { background: var(--surface-elevated); color: var(--eco); padding: 2px 7px; border-radius: 4px; font-size: 0.77rem; border: 1px solid var(--border); }
+  .quick-login-btn {
+    background: none; border: 1px solid var(--eco-border); color: var(--eco);
+    padding: 3px 10px; border-radius: 4px; font-size: 0.74rem; cursor: pointer;
+    font-family: var(--font); font-weight: 600; transition: all var(--t-fast);
+  }
+  .quick-login-btn:hover { background: var(--eco-dim); }
+  .divider {
+    text-align: center; color: var(--text-muted); font-size: 0.77rem;
+    margin: 14px 0; position: relative;
+  }
+  .divider::before, .divider::after {
+    content: ''; position: absolute; top: 50%; width: 42%; height: 1px;
+    background: var(--border);
+  }
+  .divider::before { left: 0; }
+  .divider::after  { right: 0; }
+  .guest-link { display: block; text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-top: 14px; }
+  .guest-link a { color: var(--eco); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo-mark">R</div>
+      <div><div class="brand-name">RANN AI</div><div class="brand-sub">INTELLIGENT TOURISM</div></div>
+    </a>
+    <div class="nav-right">
+      <a href="dashboard.html" class="btn-nav btn-nav-ghost">Browse Destinations</a>
+    </div>
+  </div>
+</nav>
+
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-mark">R</div>
+      <h1>Welcome to RANN AI</h1>
+      <p>Sign in to access personalized sustainable travel planning</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs" role="tablist" aria-label="Authentication">
+      <button class="auth-tab active" role="tab" aria-selected="true" aria-controls="login-panel" id="login-tab" data-target="login-panel">Sign In</button>
+      <button class="auth-tab" role="tab" aria-selected="false" aria-controls="register-panel" id="register-tab" data-target="register-panel">Create Account</button>
+    </div>
+
+    <div class="auth-form-wrap">
+      <!-- Login -->
+      <div id="login-panel" class="auth-form active" role="tabpanel" aria-labelledby="login-tab">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-control" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="Your password" autocomplete="current-password" required>
+        </div>
+        <div id="login-error" class="form-error" role="alert"></div>
+        <button id="login-btn" class="btn btn-primary btn-full">Sign In</button>
+      </div>
+
+      <!-- Register -->
+      <div id="register-panel" class="auth-form" role="tabpanel" aria-labelledby="register-tab">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" class="form-control" placeholder="Your full name" autocomplete="name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password <span>(min 6 characters)</span></label>
+          <input type="password" id="reg-password" class="form-control" placeholder="Choose a strong password" autocomplete="new-password" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-role">I am a…</label>
+          <select id="reg-role" class="form-control form-select">
+            <option value="tourist">Tourist — Plan eco-friendly trips</option>
+            <option value="operator">Eco-Tour Operator — Manage sustainable packages</option>
+            <option value="artisan">Local Artisan — Share crafts &amp; culture</option>
+          </select>
+        </div>
+        <div id="register-error" class="form-error" role="alert"></div>
+        <button id="register-btn" class="btn btn-primary btn-full">Create Account</button>
+      </div>
+    </div>
+
+    <!-- Demo credentials -->
+    <div class="demo-creds" role="note" aria-label="Demo Accounts">
+      <div class="demo-creds-title">Demo Accounts</div>
+      <div class="demo-cred">
+        <span>Tourist</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <code>tourist@example.com</code>
+          <button class="quick-login-btn" onclick="quickLogin('tourist@example.com')">Login</button>
+        </div>
+      </div>
+      <div class="demo-cred">
+        <span>Authority</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <code>authority@kutchtourism.in</code>
+          <button class="quick-login-btn" onclick="quickLogin('authority@kutchtourism.in')">Login</button>
+        </div>
+      </div>
+      <div class="demo-cred">
+        <span>Admin</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <code>admin@kutchtourism.in</code>
+          <button class="quick-login-btn" onclick="quickLogin('admin@kutchtourism.in')">Login</button>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:0.74rem;color:var(--text-muted)">All demo accounts use password: <code>password123</code></div>
+    </div>
+
+    <div class="divider">or</div>
+    <div class="guest-link"><a href="dashboard.html">Continue as Guest →</a></div>
+  </div>
+</div>
+
+<script src="src/api.js"></script>
+<script>
+// Redirect if already logged in
+if (API.isLoggedIn()) {
+  const user = API.getUser();
+  window.location.href = (user?.role === 'authority' || user?.role === 'admin') ? 'admin.html' : 'dashboard.html';
+}
+
+// Tab switching
+document.querySelectorAll('.auth-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.auth-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    document.getElementById(tab.dataset.target).classList.add('active');
+    document.querySelectorAll('.form-error').forEach(e => { e.textContent = ''; e.classList.remove('show'); });
+  });
+});
+
+// Login
+document.getElementById('login-btn').addEventListener('click', doLogin);
+document.getElementById('login-password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+async function doLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-error');
+  errEl.textContent = ''; errEl.classList.remove('show');
+
+  if (!email || !password) {
+    errEl.textContent = 'Please enter your email and password.';
+    errEl.classList.add('show'); return;
+  }
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+
+  try {
+    const res = await API.login(email, password);
+    API.setToken(res.access_token);
+    API.setUser({ name: res.name, role: res.role, id: res.user_id });
+    showToast('Welcome back, ' + res.name + '!', 'success');
+    const next = new URLSearchParams(location.search).get('next');
+    setTimeout(() => {
+      if (next) window.location.href = decodeURIComponent(next);
+      else window.location.href = (res.role === 'authority' || res.role === 'admin') ? 'admin.html' : 'dashboard.html';
+    }, 600);
+  } catch (e) {
+    const msg = e.message === 'BACKEND_OFFLINE'
+      ? 'Backend server is offline. Start with: cd backend && uvicorn main:app --reload --port 8000'
+      : e.message;
+    errEl.textContent = msg; errEl.classList.add('show');
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+// Register
+document.getElementById('register-btn').addEventListener('click', async () => {
+  const name     = document.getElementById('reg-name').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const role     = document.getElementById('reg-role').value;
+  const errEl    = document.getElementById('register-error');
+  errEl.textContent = ''; errEl.classList.remove('show');
+
+  if (!name || !email || !password) {
+    errEl.textContent = 'Please fill in all required fields.';
+    errEl.classList.add('show'); return;
+  }
+  const btn = document.getElementById('register-btn');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+
+  try {
+    await API.register({ name, email, password, role });
+    showToast('Account created! Signing you in…', 'success');
+    const res = await API.login(email, password);
+    API.setToken(res.access_token);
+    API.setUser({ name: res.name, role: res.role, id: res.user_id });
+    setTimeout(() => window.location.href = 'dashboard.html', 700);
+  } catch (e) {
+    errEl.textContent = e.message; errEl.classList.add('show');
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+});
+
+// Quick login
+async function quickLogin(email) {
+  document.getElementById('login-email').value = email;
+  document.getElementById('login-password').value = 'password123';
+  // Switch to login tab
+  document.querySelectorAll('.auth-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  document.getElementById('login-tab').classList.add('active');
+  document.getElementById('login-tab').setAttribute('aria-selected','true');
+  document.getElementById('login-panel').classList.add('active');
+  await doLogin();
+}
+</script>
+</body>
+</html>

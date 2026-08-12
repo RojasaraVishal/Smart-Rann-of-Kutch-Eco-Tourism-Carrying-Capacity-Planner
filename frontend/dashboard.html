@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore Kutch — RANN AI Intelligence</title>
+<link rel="stylesheet" href="public/styles.css">
+</head>
+<body>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo-mark">R</div>
+      <div><div class="brand-name">RANN AI</div><div class="brand-sub">INTELLIGENT TOURISM</div></div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html" class="active">Explore</a>
+      <a href="map.html">Live Map</a>
+      <a href="planner.html">Trip Planner</a>
+      <a href="artisans.html">Community</a>
+      <a href="assistant.html">AI Assistant</a>
+      <a href="admin.html" class="nav-admin-link" style="display:none">Authority</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-status"><span class="nav-status-dot"></span><span>Live</span></div>
+      <span class="nav-user nav-user-name" id="nav-user-name"></span>
+      <a href="login.html" id="nav-login" class="btn-nav">Sign In</a>
+      <button id="nav-logout" class="btn-nav btn-nav-ghost" style="display:none">Sign Out</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="6" x2="20" y2="6"/><line x1="2" y1="11" x2="20" y2="11"/><line x1="2" y1="16" x2="20" y2="16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="nav-drawer" id="nav-drawer">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html" class="active">Explore</a>
+    <a href="map.html">Live Map</a>
+    <a href="planner.html">Trip Planner</a>
+    <a href="artisans.html">Community</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="admin.html" class="nav-admin-link" style="display:none">Authority</a>
+  </nav>
+</nav>
+
+<div class="page-wrap">
+  <div class="container">
+
+    <!-- Alerts strip -->
+    <div id="alert-strip" class="alert-strip"></div>
+
+    <!-- Page header -->
+    <div class="page-hdr">
+      <div>
+        <h1>Explore Kutch Destinations</h1>
+        <p>Live crowd levels, carrying capacity scores &amp; eco-sensitivity — all in one view.
+          <span class="badge badge-predicted">◈ PREDICTED</span>
+        </p>
+      </div>
+      <div class="page-hdr-actions">
+        <a href="planner.html" class="btn btn-primary btn-sm">Plan My Trip</a>
+        <a href="map.html" class="btn btn-secondary btn-sm">Live Map</a>
+        <a href="assistant.html" class="btn btn-outline btn-sm">Ask AI</a>
+      </div>
+    </div>
+
+    <!-- KPI strip -->
+    <div class="kpi-grid" id="kpi-strip" style="margin-bottom:24px">
+      <div class="kpi-card"><div class="kpi-label">Destinations</div><div class="kpi-value" id="kpi-total">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Low Pressure</div><div class="kpi-value text-eco" id="kpi-low">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Moderate</div><div class="kpi-value text-amber" id="kpi-mod">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">High Pressure</div><div class="kpi-value text-amber" id="kpi-high">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Critical</div><div class="kpi-value text-red" id="kpi-crit">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Active Alerts</div><div class="kpi-value text-amber" id="kpi-alerts">—</div></div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <label>Filter:</label>
+      <select id="filter-category" class="form-control form-select" style="width:auto;padding:5px 32px 5px 10px;font-size:0.8rem;height:34px">
+        <option value="">All Categories</option>
+        <option value="desert">Desert</option>
+        <option value="wildlife">Wildlife</option>
+        <option value="culture">Culture</option>
+        <option value="heritage">Heritage</option>
+        <option value="handicraft">Handicraft</option>
+        <option value="village">Village</option>
+        <option value="nature">Nature</option>
+      </select>
+      <select id="filter-pressure" class="form-control form-select" style="width:auto;padding:5px 32px 5px 10px;font-size:0.8rem;height:34px">
+        <option value="">All Pressures</option>
+        <option value="low">▲ Low</option>
+        <option value="moderate">◆ Moderate</option>
+        <option value="high">◆ High</option>
+        <option value="critical">▼ Critical</option>
+      </select>
+      <span id="dest-count" style="font-size:0.79rem;color:var(--text-muted);margin-left:4px"></span>
+    </div>
+
+    <!-- Destinations grid -->
+    <div class="grid grid-2" id="destinations-grid">
+      <div class="loading-overlay" style="grid-column:1/-1">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-text">Loading destination intelligence…</div>
+      </div>
+    </div>
+
+    <!-- Demo notice -->
+    <div class="demo-notice" style="margin-top:24px">
+      <span style="flex-shrink:0">⬡</span>
+      <span>All visitor counts and capacity scores are <strong>synthetic demo data</strong> — model estimates, not official government statistics.</span>
+    </div>
+
+  </div>
+</div>
+
+<script src="src/api.js"></script>
+<script>
+let allDests = [], allCC = {};
+
+// Mobile nav
+const nt = document.getElementById('nav-toggle'), nd = document.getElementById('nav-drawer');
+if (nt && nd) nt.addEventListener('click', () => { nd.classList.toggle('open'); });
+
+async function loadData() {
+  try {
+    const [dests, cc, alerts] = await Promise.all([
+      API.getDestinations(), API.getAllCC(), API.getAlerts()
+    ]);
+    allDests = dests;
+    cc.forEach(c => allCC[c.destination_id] = c);
+
+    // Alert strip
+    const active = alerts.filter(a => a.is_active).slice(0, 3);
+    document.getElementById('alert-strip').innerHTML = active.map(a => {
+      const cls = a.severity === 'critical' ? 'alert-critical' : a.severity === 'warning' ? 'alert-warning' : 'alert-info';
+      const icon = a.severity === 'critical' ? '▼' : a.severity === 'warning' ? '◆' : 'ℹ';
+      return `<div class="alert-item ${cls}">
+        <div class="alert-icon">${icon}</div>
+        <div class="alert-content">
+          <div class="alert-title">${a.title}</div>
+          <div class="alert-msg">${a.message}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // KPI
+    const ccArr = Object.values(allCC);
+    document.getElementById('kpi-total').textContent = dests.length;
+    document.getElementById('kpi-low').textContent   = ccArr.filter(c => c.pressure_level === 'low').length;
+    document.getElementById('kpi-mod').textContent   = ccArr.filter(c => c.pressure_level === 'moderate').length;
+    document.getElementById('kpi-high').textContent  = ccArr.filter(c => c.pressure_level === 'high').length;
+    document.getElementById('kpi-crit').textContent  = ccArr.filter(c => c.pressure_level === 'critical').length;
+    document.getElementById('kpi-alerts').textContent = alerts.filter(a => a.is_active).length;
+
+    renderDests(dests);
+  } catch(e) {
+    showError('destinations-grid', e.message, true);
+  }
+}
+
+function renderDests(dests) {
+  const grid = document.getElementById('destinations-grid');
+  document.getElementById('dest-count').textContent =
+    `${dests.length} destination${dests.length !== 1 ? 's' : ''}`;
+
+  if (!dests.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:56px 24px;color:var(--text-muted)">
+      <div style="font-size:1.5rem;margin-bottom:12px;opacity:0.4">○</div>
+      No destinations match the selected filters.
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = dests.map(d => {
+    const c = allCC[d.id] || {};
+    const util = d.estimated_capacity ? Math.round(d.current_load / d.estimated_capacity * 100) : 0;
+    const pColor = PRESSURE_COLORS[c.pressure_level] || PRESSURE_COLORS.low;
+    const isOverloaded = c.pressure_level === 'high' || c.pressure_level === 'critical';
+    const utilColor = pctColor(util);
+
+    return `<div class="dest-card animate-in">
+      <div class="dest-card-accent" style="background:${pColor.dot}"></div>
+      <div class="dest-card-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
+          <div>
+            <div class="dest-name">${d.name}</div>
+            ${d.local_name ? `<div class="dest-local">${d.local_name}</div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+            ${pressureBadge(c.pressure_level || 'low')}
+            ${dataLabelBadge(d.data_label || 'DEMO')}
+          </div>
+        </div>
+        <div class="dest-meta">
+          <span>◎ ${d.location}</span>
+          <span style="color:var(--border-bright)">·</span>
+          <span>${(d.category || '').charAt(0).toUpperCase() + (d.category || '').slice(1)}</span>
+          ${d.eco_sensitivity ? `<span style="color:var(--border-bright)">·</span><span style="color:var(--eco);font-size:0.72rem">Eco-Sensitive</span>` : ''}
+        </div>
+        <div class="dest-desc">${d.description || ''}</div>
+
+        <div class="dest-stats">
+          <div class="dest-stat-item">
+            <div class="dest-stat-label">Visitors Today</div>
+            <div class="dest-stat-val">${formatNum(d.current_load)}<span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)"> / ${formatNum(d.estimated_capacity)}</span></div>
+          </div>
+          <div class="dest-stat-item">
+            <div class="dest-stat-label">CC Score</div>
+            <div class="dest-stat-val" style="color:${pColor.dot}">${c.score != null ? c.score.toFixed(0) : '—'}<span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">/100</span></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:4px">
+          ${scoreMeter(util)}
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <span style="font-size:0.72rem;color:var(--text-muted)">${util}% capacity utilisation</span>
+          <span style="font-size:0.72rem;font-weight:700;color:${utilColor}">${pctLabel(util)}</span>
+        </div>
+
+        ${isOverloaded && c.recommended_action ? `
+          <div style="font-size:0.78rem;font-weight:600;color:var(--amber);margin-bottom:10px;padding:8px 12px;background:var(--amber-dim);border-radius:var(--radius-sm);border:1px solid var(--amber-border)">
+            ◆ ${c.recommended_action}
+          </div>` : ''}
+        ${d.community_opportunities ? `
+          <div style="font-size:0.78rem;color:var(--eco);margin-bottom:10px">
+            ● Community experiences available
+          </div>` : ''}
+
+        <div class="dest-actions">
+          <a href="planner.html?dest=${d.id}" class="btn btn-primary btn-sm">Plan Visit</a>
+          <a href="map.html" class="btn btn-secondary btn-sm">Map</a>
+          <a href="assistant.html" class="btn btn-outline btn-sm">Ask AI</a>
+          ${isOverloaded ? `<button onclick="findAlternatives(${d.id},'${d.name.replace(/'/g,"\\'")}','${d.category}')" class="btn btn-sm btn-outline-eco">Find Alternative</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function findAlternatives(id, name, cat) {
+  showToast(`Finding alternatives for ${name}…`, 'info');
+  try {
+    const res = await API.getAlternatives(id);
+    const alts = res.alternatives || [];
+    if (!alts.length) { showToast('No alternatives found right now.', 'warning'); return; }
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
+    overlay.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div>
+            <div style="font-size:1rem;font-weight:800;color:var(--silver-bright)">Alternative Destinations</div>
+            <div style="font-size:0.79rem;color:var(--text-muted);margin-top:2px">Instead of ${name}</div>
+          </div>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--text-muted);padding:4px">✕</button>
+        </div>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">${res.message || ''}</p>
+        ${alts.map(a => `
+          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;background:var(--surface-elevated)">
+            <div style="font-weight:700;margin-bottom:4px;color:var(--text-primary)">${a.name}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px">${a.category} · CC: ${a.carrying_capacity_score?.toFixed(0)}/100 · Similarity: ${a.similarity_score}%</div>
+            <div style="font-size:0.81rem;margin-bottom:8px;color:var(--text-secondary)">${a.reason}</div>
+            ${a.community_opportunities ? '<div style="font-size:0.75rem;color:var(--eco)">● Community opportunities available</div>' : ''}
+            <div style="margin-top:8px;display:flex;gap:6px;align-items:center">
+              ${pressureBadge(a.pressure_level || 'low')}
+              <span class="badge badge-ai">◈ AI RECOMMENDATION</span>
+            </div>
+          </div>`).join('')}
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:8px">AI recommendations from demo data. Verify before visiting.</div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+document.getElementById('filter-category').addEventListener('change', applyFilters);
+document.getElementById('filter-pressure').addEventListener('change', applyFilters);
+
+function applyFilters() {
+  const cat   = document.getElementById('filter-category').value;
+  const press = document.getElementById('filter-pressure').value;
+  let f = allDests;
+  if (cat)   f = f.filter(d => d.category === cat);
+  if (press) f = f.filter(d => (allCC[d.id]?.pressure_level || 'low') === press);
+  renderDests(f);
+}
+
+loadData();
+</script>
+</body>
+</html>

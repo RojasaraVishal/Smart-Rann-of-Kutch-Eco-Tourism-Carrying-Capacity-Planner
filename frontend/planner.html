@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sustainable Trip Planner — RANN AI</title>
+<link rel="stylesheet" href="public/styles.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  .planner-layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+  #map-small { height: 260px; border-radius: var(--radius); }
+  @media (max-width: 860px) { .planner-layout { grid-template-columns: 1fr; } }
+  /* Dark Leaflet */
+  .leaflet-tile-pane { filter: brightness(0.6) saturate(0.7); }
+  .leaflet-control-zoom a { background: var(--card) !important; color: var(--text-primary) !important; border-color: var(--border) !important; }
+  .leaflet-control-attribution { background: rgba(13,16,20,0.7) !important; color: var(--text-muted) !important; }
+</style>
+</head>
+<body>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo-mark">R</div>
+      <div><div class="brand-name">RANN AI</div><div class="brand-sub">INTELLIGENT TOURISM</div></div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Explore</a>
+      <a href="map.html">Live Map</a>
+      <a href="planner.html" class="active">Trip Planner</a>
+      <a href="artisans.html">Community</a>
+      <a href="assistant.html">AI Assistant</a>
+      <a href="admin.html" class="nav-admin-link" style="display:none">Authority</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user nav-user-name" id="nav-user-name"></span>
+      <a href="login.html" id="nav-login" class="btn-nav">Sign In</a>
+      <button id="nav-logout" class="btn-nav btn-nav-ghost" style="display:none">Sign Out</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="6" x2="20" y2="6"/><line x1="2" y1="11" x2="20" y2="11"/><line x1="2" y1="16" x2="20" y2="16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="nav-drawer" id="nav-drawer">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explore</a>
+    <a href="map.html">Live Map</a>
+    <a href="planner.html" class="active">Trip Planner</a>
+    <a href="artisans.html">Community</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="admin.html" class="nav-admin-link" style="display:none">Authority</a>
+  </nav>
+</nav>
+
+<div class="page-wrap">
+  <div class="container">
+
+    <div class="page-hdr">
+      <div>
+        <h1>Sustainable Trip Planner</h1>
+        <p>Agentic AI designs your perfect Kutch journey — balancing experience, crowd avoidance, ecological care &amp; local benefit.
+          <span class="badge badge-ai">◈ AI</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="planner-layout">
+
+      <!-- ── Preferences form ── -->
+      <div>
+        <div class="card" style="position:sticky;top:calc(var(--nav-h) + 16px);max-height:calc(100vh - var(--nav-h) - 32px);overflow-y:auto">
+          <div class="card-header">Trip Preferences</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label" for="start-date">Start Date</label>
+              <input type="date" id="start-date" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="duration">Duration</label>
+              <select id="duration" class="form-control form-select">
+                <option value="1">1 Day</option>
+                <option value="2">2 Days</option>
+                <option value="3" selected>3 Days</option>
+                <option value="4">4 Days</option>
+                <option value="5">5 Days</option>
+                <option value="7">7 Days</option>
+              </select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="form-group">
+                <label class="form-label" for="group-size">Group Size</label>
+                <input type="number" id="group-size" class="form-control" value="4" min="1" max="50">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="budget">Budget</label>
+                <select id="budget" class="form-control form-select">
+                  <option value="budget">Budget</option>
+                  <option value="moderate" selected>Moderate</option>
+                  <option value="luxury">Luxury</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Interests <span>(select all that apply)</span></label>
+              <div class="tag-group" id="interest-tags">
+                <span class="tag-pill active" data-val="desert">Desert</span>
+                <span class="tag-pill active" data-val="culture">Culture</span>
+                <span class="tag-pill" data-val="wildlife">Wildlife</span>
+                <span class="tag-pill active" data-val="handicraft">Handicraft</span>
+                <span class="tag-pill" data-val="heritage">Heritage</span>
+                <span class="tag-pill" data-val="village">Village</span>
+                <span class="tag-pill" data-val="photography">Photography</span>
+                <span class="tag-pill" data-val="nature">Nature</span>
+                <span class="tag-pill" data-val="adventure">Adventure</span>
+              </div>
+              <div class="form-hint">At least 1 required</div>
+            </div>
+            <button id="plan-btn" class="btn btn-primary btn-full" style="margin-top:4px">
+              ◈ Generate Sustainable Itinerary
+            </button>
+            <button id="demo-btn" class="btn btn-secondary btn-full" style="margin-top:8px">
+              ⚡ Load Demo Scenario
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Results ── -->
+      <div>
+        <!-- Idle state -->
+        <div id="idle-state" style="text-align:center;padding:72px 24px;color:var(--text-muted)">
+          <div style="width:56px;height:56px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.4rem;color:var(--eco)">▦</div>
+          <div style="font-size:1.05rem;font-weight:700;color:var(--silver);margin-bottom:8px">Ready to plan your journey</div>
+          <div style="font-size:0.87rem;max-width:340px;margin:0 auto;color:var(--text-muted)">Fill in your preferences and click "Generate" — our Agentic AI will handle the rest.</div>
+        </div>
+
+        <!-- Loading state -->
+        <div id="loading-panel" style="display:none">
+          <div class="loading-overlay" style="padding:80px 24px">
+            <div class="spinner spinner-lg"></div>
+            <div style="font-weight:700;font-size:0.95rem;color:var(--silver)">AI agents working…</div>
+            <div class="loading-text" id="loading-step">Checking tourist loads</div>
+          </div>
+        </div>
+
+        <!-- Result state -->
+        <div id="result-panel" style="display:none">
+
+          <!-- Sustainability block -->
+          <div class="sus-block" style="margin-bottom:20px">
+            <div>
+              <div class="sus-num" id="sus-score">—</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-top:3px">Sustainability</div>
+            </div>
+            <div class="sus-info">
+              <div class="sus-label" id="sus-label"></div>
+              <div id="sus-bar" style="margin:5px 0"></div>
+              <div class="sus-reasons" id="sus-reasons"></div>
+            </div>
+            <span class="badge badge-ai" style="align-self:flex-start">◈ AI</span>
+          </div>
+
+          <!-- Day-by-day -->
+          <div id="itinerary-days" style="margin-bottom:20px"></div>
+
+          <!-- Community experiences -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">Recommended Community Experiences</div>
+            <div class="card-body" id="community-panel"></div>
+          </div>
+
+          <!-- Route map -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">Your Route on Map</div>
+            <div class="card-body" style="padding:12px">
+              <div id="map-small"></div>
+              <p style="font-size:0.71rem;color:var(--text-muted);margin-top:6px">Map data © OpenStreetMap. Route is indicative only.</p>
+            </div>
+          </div>
+
+          <!-- IBM Granite explanation -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">
+              IBM Granite AI Explanation
+              <span class="badge badge-ai">◈ AI</span>
+            </div>
+            <div class="card-body">
+              <div id="granite-text" style="white-space:pre-wrap;font-size:0.87rem;line-height:1.7;color:var(--text-secondary)"></div>
+            </div>
+          </div>
+
+          <!-- Disclaimer -->
+          <div class="demo-notice">
+            <span>⬡</span>
+            <span>This itinerary is <strong>AI-generated from demo data</strong>. Carrying capacity scores are model estimates. Always verify opening hours, permits, and conditions before visiting.</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="src/api.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Mobile nav
+const nt = document.getElementById('nav-toggle'), nd = document.getElementById('nav-drawer');
+if (nt && nd) nt.addEventListener('click', () => nd.classList.toggle('open'));
+
+// Interest tags
+document.querySelectorAll('#interest-tags .tag-pill').forEach(tag =>
+  tag.addEventListener('click', () => tag.classList.toggle('active'))
+);
+
+// Default date = tomorrow
+const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+document.getElementById('start-date').value = tomorrow.toISOString().split('T')[0];
+
+// Demo scenario
+document.getElementById('demo-btn').addEventListener('click', () => {
+  document.getElementById('start-date').value = tomorrow.toISOString().split('T')[0];
+  document.getElementById('duration').value = '3';
+  document.getElementById('group-size').value = '4';
+  document.getElementById('budget').value = 'moderate';
+  document.querySelectorAll('#interest-tags .tag-pill').forEach(t => t.classList.remove('active'));
+  ['desert', 'culture', 'handicraft'].forEach(v =>
+    document.querySelector(`[data-val="${v}"]`)?.classList.add('active')
+  );
+  showToast('Demo scenario loaded — Family of 4, 3 days, desert + culture + handicraft', 'success');
+});
+
+// Loading step messages
+const steps = [
+  'Checking tourist loads…',
+  'Calculating carrying capacity…',
+  'Identifying overloaded destinations…',
+  'Finding sustainable alternatives…',
+  'Matching local artisans…',
+  'Optimising travel route…',
+  'Generating itinerary with IBM Granite…',
+];
+let stepIdx = 0, stepTimer = null;
+function startLoadingSteps() {
+  stepIdx = 0;
+  document.getElementById('loading-step').textContent = steps[0];
+  stepTimer = setInterval(() => {
+    stepIdx = (stepIdx + 1) % steps.length;
+    document.getElementById('loading-step').textContent = steps[stepIdx];
+  }, 1600);
+}
+function stopLoadingSteps() { clearInterval(stepTimer); }
+
+let planMap = null;
+
+document.getElementById('plan-btn').addEventListener('click', async () => {
+  const interests = [...document.querySelectorAll('#interest-tags .tag-pill.active')].map(t => t.dataset.val);
+  if (!interests.length) { showToast('Please select at least one interest.', 'error'); return; }
+
+  document.getElementById('idle-state').style.display = 'none';
+  document.getElementById('loading-panel').style.display = 'block';
+  document.getElementById('result-panel').style.display = 'none';
+  document.getElementById('plan-btn').disabled = true;
+  startLoadingSteps();
+
+  try {
+    const payload = {
+      start_date: document.getElementById('start-date').value,
+      duration_days: parseInt(document.getElementById('duration').value),
+      interests,
+      budget: document.getElementById('budget').value,
+      group_size: parseInt(document.getElementById('group-size').value),
+    };
+    const data = await API.generateItinerary(payload);
+    stopLoadingSteps();
+
+    // Sustainability
+    const sus = data.sustainability_score || 0;
+    document.getElementById('sus-score').textContent = sus.toFixed(0);
+    document.getElementById('sus-bar').innerHTML = scoreMeter(sus);
+    document.getElementById('sus-label').textContent = data.sustainability_label || '';
+    document.getElementById('sus-reasons').textContent = (data.sustainability_reasons || []).join(' · ');
+
+    // Day-by-day
+    const daysEl = document.getElementById('itinerary-days');
+    daysEl.innerHTML = '';
+    const dayPlan = data.day_by_day || {};
+    const coords = [];
+    Object.entries(dayPlan).forEach(([day, stops]) => {
+      const stopHtml = (stops || []).map(s => {
+        if (s.latitude) coords.push([s.latitude, s.longitude, s.destination_name]);
+        return `<div class="day-stop">
+          <div class="stop-time">${s.time_slot || ''}</div>
+          <div class="stop-content">
+            <div class="stop-name">${s.destination_name} ${pressureBadge(s.crowd_level || 'low')}</div>
+            <div class="stop-reason">${s.reason || ''}</div>
+            <div class="stop-meta">
+              ⏱ ${s.duration_hours}h &nbsp;·&nbsp;
+              CC: ${s.carrying_capacity_score?.toFixed(0)}/100 &nbsp;·&nbsp;
+              Eco: ${s.ecological_sensitivity}/10
+            </div>
+            ${s.sustainable_practices ? `<div style="font-size:0.74rem;color:var(--eco);margin-top:4px">● ${s.sustainable_practices}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+      daysEl.innerHTML += `<div class="day-card">
+        <div class="day-header">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="day-num">${day}</span>
+            <span>Day ${day}</span>
+          </div>
+          <span style="font-size:0.79rem;font-weight:400;color:var(--text-muted)">${(stops||[]).length} stop${(stops||[]).length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="day-stops">${stopHtml}</div>
+      </div>`;
+    });
+
+    // Community experiences
+    const exp = data.recommended_community_experiences || [];
+    document.getElementById('community-panel').innerHTML = exp.length
+      ? exp.map(e => `<div style="padding:12px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--surface)">
+          <div>
+            <div style="font-weight:700;margin-bottom:3px;color:var(--text-primary)">${e.title}</div>
+            <div style="font-size:0.79rem;color:var(--text-muted)">${e.artisan_name} · ◎ ${e.artisan_location}</div>
+            <div style="font-size:0.76rem;color:var(--eco);margin-top:3px">${(e.match_reasons || []).join(' · ')}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:1.05rem;font-weight:800;color:var(--eco)">${e.match_score}%</div>
+            <div style="font-size:0.72rem;color:var(--text-muted)">match</div>
+            <div style="font-size:0.79rem;margin-top:3px;color:var(--text-secondary)">₹${e.price_per_person}/person · ${e.duration_hours}h</div>
+          </div>
+        </div>`).join('')
+      : '<div style="color:var(--text-muted);font-size:0.87rem">No community experiences matched your interests.</div>';
+
+    // Route map
+    if (planMap) { planMap.remove(); planMap = null; }
+    planMap = L.map('map-small').setView([23.5, 69.8], 8);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM' }).addTo(planMap);
+    coords.forEach(([lat, lng, name], i) => {
+      L.circleMarker([lat, lng], { radius: 10, fillColor: '#42D392', color: 'rgba(0,0,0,0.3)', weight: 2, fillOpacity: 0.9 })
+        .bindPopup(`<strong>${i + 1}. ${name}</strong>`).addTo(planMap);
+    });
+    if (coords.length > 1) {
+      L.polyline(coords.map(c => [c[0], c[1]]), { color: '#42D392', weight: 2, dashArray: '5,6', opacity: 0.8 }).addTo(planMap);
+    }
+    if (coords.length) setTimeout(() => planMap.invalidateSize(), 100);
+
+    // IBM Granite explanation
+    const storedText = data.granite_explanation;
+    document.getElementById('granite-text').textContent = storedText || 'Requesting IBM Granite explanation…';
+    if (!storedText) {
+      try {
+        const allStops = Object.values(dayPlan).flat().map(s => s.destination_name).join(', ');
+        const chatRes = await API.chat(
+          `Explain this ${data.duration_days}-day sustainable Kutch itinerary. Sustainability score: ${sus.toFixed(0)}. Key destinations: ${allStops}. Briefly note why this is eco-friendly.`, 'en'
+        );
+        document.getElementById('granite-text').textContent =
+          chatRes?.granite_response?.text || '[AI explanation unavailable — backend may need IBM API key]';
+      } catch {
+        document.getElementById('granite-text').textContent =
+          '[IBM Granite explanation unavailable. Configure IBM_API_KEY in backend/.env to enable.]';
+      }
+    }
+
+    document.getElementById('loading-panel').style.display = 'none';
+    document.getElementById('result-panel').style.display = 'block';
+    document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth' });
+
+  } catch(e) {
+    stopLoadingSteps();
+    document.getElementById('loading-panel').style.display = 'none';
+    document.getElementById('idle-state').style.display = 'block';
+    showToast('Error generating itinerary: ' + (e.message === 'BACKEND_OFFLINE' ? 'Backend offline — start with: uvicorn main:app --reload' : e.message), 'error');
+  } finally {
+    document.getElementById('plan-btn').disabled = false;
+  }
+});
+</script>
+</body>
+</html>

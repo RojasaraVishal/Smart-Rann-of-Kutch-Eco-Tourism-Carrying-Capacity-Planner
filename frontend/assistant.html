@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Assistant — RANN AI</title>
+<link rel="stylesheet" href="public/styles.css">
+<style>
+  .assistant-layout { display: grid; grid-template-columns: 1fr 270px; gap: 24px; }
+  .chat-outer { display: flex; flex-direction: column; height: 580px; }
+  @media (max-width: 860px) {
+    .assistant-layout { grid-template-columns: 1fr; }
+    .chat-outer { height: calc(100vh - 280px); min-height: 360px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo-mark">R</div>
+      <div><div class="brand-name">RANN AI</div><div class="brand-sub">INTELLIGENT TOURISM</div></div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Explore</a>
+      <a href="map.html">Live Map</a>
+      <a href="planner.html">Trip Planner</a>
+      <a href="artisans.html">Community</a>
+      <a href="assistant.html" class="active">AI Assistant</a>
+      <a href="admin.html" class="nav-admin-link" style="display:none">Authority</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-status"><span class="nav-status-dot"></span><span>IBM Granite</span></div>
+      <span class="nav-user nav-user-name" id="nav-user-name"></span>
+      <a href="login.html" id="nav-login" class="btn-nav">Sign In</a>
+      <button id="nav-logout" class="btn-nav btn-nav-ghost" style="display:none">Sign Out</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="6" x2="20" y2="6"/><line x1="2" y1="11" x2="20" y2="11"/><line x1="2" y1="16" x2="20" y2="16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="nav-drawer" id="nav-drawer">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explore</a>
+    <a href="map.html">Live Map</a>
+    <a href="planner.html">Trip Planner</a>
+    <a href="artisans.html">Community</a>
+    <a href="assistant.html" class="active">AI Assistant</a>
+    <a href="admin.html" class="nav-admin-link" style="display:none">Authority</a>
+  </nav>
+</nav>
+
+<div class="page-wrap">
+  <div class="container-sm">
+
+    <div class="page-hdr">
+      <div>
+        <h1>RANN AI — Eco-Tourism Advisor</h1>
+        <p>Powered by <strong>IBM Granite LLM</strong>. Ask in English, Hindi, or Gujarati.
+          The assistant retrieves live platform data and never fabricates information.
+        </p>
+      </div>
+    </div>
+
+    <div class="assistant-layout">
+
+      <!-- ── Chat panel ── -->
+      <div>
+        <!-- Language selector -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <button class="lang-btn active" data-lang="en">EN English</button>
+          <button class="lang-btn" data-lang="hi">HI हिन्दी</button>
+          <button class="lang-btn" data-lang="gu">GU ગુજરાતી</button>
+        </div>
+
+        <!-- Suggested prompts -->
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">
+          <button class="quick-chip" data-prompt="Plan a 3-day eco-friendly Kutch trip for a family of 4">Plan 3-day eco trip</button>
+          <button class="quick-chip" data-prompt="Which places in Kutch are less crowded right now?">Less crowded places</button>
+          <button class="quick-chip" data-prompt="What local handicraft experiences can I try near Bhuj?">Local handicrafts</button>
+          <button class="quick-chip" data-prompt="Which destinations have high ecological sensitivity?">Eco-sensitive zones</button>
+          <button class="quick-chip" data-prompt="Show alternatives to Rann Utsav that are less crowded">Alternatives to Rann Utsav</button>
+          <button class="quick-chip" data-prompt="What is the carrying capacity of White Rann?">Carrying capacity info</button>
+          <button class="quick-chip" data-prompt="3 દિવસ ની eco-friendly Kutch trip plan કરો">GU: ત્રણ દિવસ trip</button>
+          <button class="quick-chip" data-prompt="कच्छ में किन जगहों पर कम भीड़ है?">HI: कम भीड़ वाली जगहें</button>
+        </div>
+
+        <!-- Chat container -->
+        <div class="chat-outer">
+          <div class="chat-container" style="height:100%">
+            <div class="chat-messages" id="chat-messages">
+              <div class="chat-msg chat-msg-ai">
+                <div class="msg-source">
+                  <span class="badge badge-ai">◈ IBM Granite</span>
+                  <span>Eco-Tourism Advisor</span>
+                </div>
+                Namaste! I'm your Smart Kutch Eco-Tourism AI, powered by IBM Granite LLM.<br><br>
+                I can help you:<br>
+                &nbsp;· Plan sustainable trips to the Rann of Kutch<br>
+                &nbsp;· Check crowd levels and carrying capacity<br>
+                &nbsp;· Find alternatives to overcrowded destinations<br>
+                &nbsp;· Discover local artisan and community experiences<br>
+                &nbsp;· Get eco-friendly travel guidance<br><br>
+                Ask me anything in English, Hindi, or Gujarati!
+                <div style="margin-top:10px;font-size:0.72rem;color:var(--text-muted);border-top:1px solid var(--border-subtle);padding-top:7px">I only report platform database information. I never fabricate data.</div>
+              </div>
+            </div>
+            <div class="chat-input-row">
+              <input type="text" id="chat-input" class="form-control chat-input"
+                placeholder="Ask about destinations, crowd levels, itineraries…"
+                aria-label="Chat message">
+              <button id="send-btn" class="btn btn-primary btn-sm" style="white-space:nowrap">Send</button>
+              <button id="clear-btn" class="btn btn-secondary btn-sm" title="Clear chat">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Side panel ── -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+
+        <!-- Agentic pipeline -->
+        <div class="card">
+          <div class="card-header">
+            Agentic Pipeline
+            <span class="badge badge-demo">DEMO</span>
+          </div>
+          <div class="card-body" style="padding:14px 16px">
+            <div style="font-size:0.74rem;color:var(--text-muted);margin-bottom:10px">Your query activates:</div>
+            <div id="pipeline-steps" style="display:flex;flex-direction:column;gap:4px">
+              <div class="agent-step" id="step-intent">
+                <span class="step-dot"></span>1. Intent Detection
+              </div>
+              <div class="agent-arrow">↓</div>
+              <div class="agent-step" id="step-routing">
+                <span class="step-dot"></span>2. Agent Routing
+              </div>
+              <div class="agent-arrow">↓</div>
+              <div class="agent-step" id="step-load">
+                <span class="step-dot"></span>3. Load Agent
+              </div>
+              <div class="agent-arrow">↓</div>
+              <div class="agent-step" id="step-cc">
+                <span class="step-dot"></span>4. Capacity Agent
+              </div>
+              <div class="agent-arrow">↓</div>
+              <div class="agent-step" id="step-granite">
+                <span class="step-dot"></span>5. IBM Granite LLM
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detected intent -->
+        <div id="intent-card" class="card" style="display:none">
+          <div class="card-header">Last Intent</div>
+          <div class="card-body" id="intent-display" style="padding:14px 16px;font-size:0.81rem;display:flex;flex-direction:column;gap:5px"></div>
+        </div>
+
+        <!-- Languages -->
+        <div class="card">
+          <div class="card-header">Supported Languages</div>
+          <div class="card-body" style="padding:14px 16px;font-size:0.82rem;display:flex;flex-direction:column;gap:7px">
+            <div style="color:var(--text-secondary)">EN — English</div>
+            <div style="color:var(--text-secondary)">HI — हिन्दी (Hindi)</div>
+            <div style="color:var(--text-secondary)">GU — ગુજરાતી (Gujarati)</div>
+          </div>
+        </div>
+
+        <!-- AI Safety -->
+        <div class="card">
+          <div class="card-header">AI Safety Principles</div>
+          <div class="card-body" style="padding:14px 16px;font-size:0.76rem;color:var(--text-muted);line-height:1.8">
+            <div style="color:var(--eco)">● Only reports platform data</div>
+            <div style="color:var(--eco)">● Labels predictions clearly</div>
+            <div style="color:var(--eco)">● Never fabricates prices</div>
+            <div style="color:var(--eco)">● Never fabricates restrictions</div>
+            <div style="color:var(--eco)">● States when data unavailable</div>
+            <div style="color:var(--red)">○ Never invents visitor counts</div>
+            <div style="color:var(--red)">○ Never claims official status</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="src/api.js"></script>
+<script>
+let selectedLang = 'en';
+const sessionId = 'session_' + Date.now();
+
+// Mobile nav
+const nt = document.getElementById('nav-toggle'), nd = document.getElementById('nav-drawer');
+if (nt && nd) nt.addEventListener('click', () => nd.classList.toggle('open'));
+
+// Language buttons
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedLang = btn.dataset.lang;
+  });
+});
+
+// Quick prompts
+document.querySelectorAll('.quick-chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById('chat-input').value = btn.dataset.prompt;
+    sendMessage();
+  });
+});
+
+// Clear chat
+document.getElementById('clear-btn').addEventListener('click', () => {
+  const msgs = document.getElementById('chat-messages');
+  // Keep only welcome message
+  const welcome = msgs.querySelector('.chat-msg-ai');
+  msgs.innerHTML = '';
+  if (welcome) msgs.appendChild(welcome);
+  resetPipeline();
+  document.getElementById('intent-card').style.display = 'none';
+});
+
+function resetPipeline() {
+  ['step-intent','step-routing','step-load','step-cc','step-granite'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('active','done'); }
+  });
+}
+
+function animatePipeline(steps = []) {
+  resetPipeline();
+  const ids = ['step-intent','step-routing','step-load','step-cc','step-granite'];
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i > 0) {
+      const prev = document.getElementById(ids[i - 1]);
+      if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
+    }
+    if (i < ids.length) {
+      const curr = document.getElementById(ids[i]);
+      if (curr) curr.classList.add('active');
+      i++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 700);
+  return interval;
+}
+
+function appendMsg(content, type = 'ai', source = null, intent = null) {
+  const el = document.createElement('div');
+  el.className = `chat-msg chat-msg-${type} animate-in`;
+  if (type === 'ai') {
+    const srcBadge = source === 'ibm_granite'
+      ? '<span class="badge badge-ai">◈ IBM Granite</span>'
+      : '<span class="badge badge-demo">○ Demo Mode</span>';
+    const intentStr = intent ? `<span style="color:var(--text-muted);font-size:0.7rem;margin-left:4px">${intent}</span>` : '';
+    el.innerHTML = `<div class="msg-source">${srcBadge}${intentStr}</div>${content.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}`;
+  } else {
+    el.textContent = content;
+  }
+  const msgs = document.getElementById('chat-messages');
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const el = document.createElement('div');
+  el.className = 'chat-typing';
+  el.id = 'typing-indicator';
+  el.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div><span style="margin-left:4px">Thinking…</span>';
+  const msgs = document.getElementById('chat-messages');
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  return el;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const query = input.value.trim();
+  if (!query) return;
+  input.value = '';
+  appendMsg(query, 'user');
+
+  const typing = showTyping();
+  document.getElementById('send-btn').disabled = true;
+
+  const pipeTimer = animatePipeline();
+
+  try {
+    const res = await API.chat(query, selectedLang, sessionId);
+    typing.remove();
+    clearInterval(pipeTimer);
+
+    // Mark all steps done
+    ['step-intent','step-routing','step-load','step-cc','step-granite'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.classList.remove('active'); el.classList.add('done'); }
+    });
+
+    const text   = res.granite_response?.text || 'No response received.';
+    const source = res.granite_response?.source || 'unknown';
+    const intent = res.intent;
+    appendMsg(text, 'ai', source, intent);
+
+    // Intent card
+    document.getElementById('intent-card').style.display = 'block';
+    document.getElementById('intent-display').innerHTML = `
+      <div><strong style="color:var(--silver)">Intent:</strong> <span style="color:var(--eco)">${intent || '—'}</span></div>
+      <div><strong style="color:var(--silver)">Language:</strong> ${res.language || selectedLang}</div>
+      <div><strong style="color:var(--silver)">Source:</strong> ${source}</div>
+      <div style="margin-top:6px">${source === 'ibm_granite'
+        ? '<span class="badge badge-ai">◈ IBM Granite</span>'
+        : '<span class="badge badge-demo">○ Demo Mode</span>'
+      }</div>`;
+  } catch(e) {
+    typing.remove();
+    clearInterval(pipeTimer);
+    resetPipeline();
+    appendMsg(`Unable to get a response.\n\n${e.message === 'BACKEND_OFFLINE'
+      ? 'Ensure the backend is running: cd backend && uvicorn main:app --reload'
+      : e.message}`, 'ai');
+  } finally {
+    document.getElementById('send-btn').disabled = false;
+    input.focus();
+  }
+}
+
+document.getElementById('send-btn').addEventListener('click', sendMessage);
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+</script>
+</body>
+</html>

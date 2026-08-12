@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RANN AI — Intelligent Eco-Tourism for Kutch</title>
+<meta name="description" content="AI-powered sustainable eco-tourism management for the Rann of Kutch. Tourist load forecasting, carrying capacity intelligence, and responsible travel planning.">
+<link rel="stylesheet" href="public/styles.css">
+<style>
+  @media (max-width: 768px) {
+    .responsive-two-col { grid-template-columns: 1fr !important; gap: 36px !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="main-nav" role="navigation" aria-label="Main Navigation">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand" aria-label="RANN AI Home">
+      <div class="nav-logo-mark" aria-hidden="true">R</div>
+      <div>
+        <div class="brand-name">RANN AI</div>
+        <div class="brand-sub">INTELLIGENT TOURISM</div>
+      </div>
+    </a>
+    <div class="nav-links" role="menubar">
+      <a href="index.html" class="active" role="menuitem">Overview</a>
+      <a href="dashboard.html" role="menuitem">Explore</a>
+      <a href="map.html" role="menuitem">Live Map</a>
+      <a href="planner.html" role="menuitem">Trip Planner</a>
+      <a href="artisans.html" role="menuitem">Community</a>
+      <a href="assistant.html" role="menuitem">AI Assistant</a>
+      <a href="admin.html" class="nav-admin-link" role="menuitem" style="display:none">Authority</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-status" aria-live="polite">
+        <span class="nav-status-dot" aria-hidden="true"></span>
+        <span id="nav-status-text">System Online</span>
+      </div>
+      <span class="nav-user nav-user-name" id="nav-user-name"></span>
+      <a href="login.html" id="nav-login" class="btn-nav">Sign In</a>
+      <button id="nav-logout" class="btn-nav btn-nav-ghost" style="display:none" aria-label="Sign out">Sign Out</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open navigation" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="2" y1="6" x2="20" y2="6"/><line x1="2" y1="11" x2="20" y2="11"/><line x1="2" y1="16" x2="20" y2="16"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <!-- Mobile drawer -->
+  <nav class="nav-drawer" id="nav-drawer" aria-label="Mobile navigation">
+    <a href="index.html" class="active">Overview</a>
+    <a href="dashboard.html">Explore Destinations</a>
+    <a href="map.html">Live Intelligence Map</a>
+    <a href="planner.html">Trip Planner</a>
+    <a href="artisans.html">Community & Artisans</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="admin.html" class="nav-admin-link" style="display:none">Authority</a>
+    <a href="login.html" id="mobile-login">Sign In</a>
+  </nav>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-inner">
+    <div class="hero-eyebrow" role="list">
+      <span class="hero-tag" role="listitem">Agentic AI</span>
+      <span class="hero-tag" role="listitem">IBM Granite LLM</span>
+      <span class="hero-tag" role="listitem">ML Forecasting</span>
+      <span class="hero-tag" role="listitem">Carrying Capacity</span>
+      <span class="hero-tag" role="listitem">IBM Cloud</span>
+    </div>
+    <h1 id="hero-heading">
+      AI-Powered Sustainable<br>Tourism for <span class="hl-eco">Kutch</span>
+    </h1>
+    <p>
+      Balance tourism, protect fragile ecosystems, and empower local communities
+      with intelligent data-driven planning — powered by IBM Granite LLM.
+    </p>
+    <div class="hero-actions">
+      <a href="planner.html" class="btn btn-primary btn-lg">Plan Sustainable Trip</a>
+      <a href="dashboard.html" class="btn btn-outline btn-lg">Open Live Intelligence</a>
+      <a href="assistant.html" class="btn btn-ghost btn-lg">AI Assistant</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Live Intelligence Stats ── -->
+<div class="stat-bar" role="region" aria-label="Live Platform Statistics">
+  <div class="container">
+    <div class="stat-bar-inner">
+      <div class="stat-bar-item">
+        <div class="stat-bar-val" id="stat-visitors">—</div>
+        <div class="stat-bar-label">Current Tourist Load</div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val" id="stat-destinations">—</div>
+        <div class="stat-bar-label">Destinations Monitored</div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val" id="stat-capacity">—</div>
+        <div class="stat-bar-label">Avg Capacity Used</div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val" id="stat-artisans">—</div>
+        <div class="stat-bar-label">Local Artisans</div>
+      </div>
+      <div class="stat-bar-item">
+        <div class="stat-bar-val" id="stat-alerts">—</div>
+        <div class="stat-bar-label">Active Alerts</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Demo Notice ── -->
+<div class="container" style="padding-top:28px">
+  <div class="demo-notice" role="note">
+    <span aria-hidden="true" style="flex-shrink:0;font-size:0.9rem">⬡</span>
+    <div>
+      <strong>DEMO MODE</strong> — All destination data, tourist counts, and carrying capacity scores are synthetic data for demonstration.
+      IBM Granite LLM responses require <code>IBM_API_KEY</code> in <code>backend/.env</code>.
+    </div>
+  </div>
+</div>
+
+<!-- ── Platform Capabilities ── -->
+<section class="section section-alt" aria-labelledby="features-heading">
+  <div class="container">
+    <div class="section-head" style="text-align:center">
+      <h2 id="features-heading">Platform Capabilities</h2>
+      <p>Six integrated intelligence modules for sustainable tourism management</p>
+    </div>
+    <div class="feature-grid">
+      <a href="dashboard.html" class="feature-card" style="text-decoration:none;color:inherit">
+        <div class="feature-icon" aria-hidden="true">◈</div>
+        <div class="feature-title">Tourist Load Intelligence</div>
+        <div class="feature-desc">Real-time crowd monitoring with ML-powered prediction. XGBoost model forecasts daily visitor arrivals using seasonal and event features.</div>
+      </a>
+      <a href="dashboard.html" class="feature-card" style="text-decoration:none;color:inherit">
+        <div class="feature-icon" aria-hidden="true">◎</div>
+        <div class="feature-title">Carrying Capacity Engine</div>
+        <div class="feature-desc">Configurable weighted pressure scoring (0–100) weighing tourist load, water, waste, infrastructure, and ecological sensitivity.</div>
+      </a>
+      <a href="planner.html" class="feature-card" style="text-decoration:none;color:inherit">
+        <div class="feature-icon" aria-hidden="true">▦</div>
+        <div class="feature-title">AI Trip Planning</div>
+        <div class="feature-desc">Day-by-day sustainable itineraries that avoid overcrowded destinations and promote low-pressure alternatives and artisan experiences.</div>
+      </a>
+      <a href="map.html" class="feature-card" style="text-decoration:none;color:inherit">
+        <div class="feature-icon" aria-hidden="true">⬡</div>
+        <div class="feature-title">Eco-Sensitive Zones</div>
+        <div class="feature-desc">Visual intelligence map with colour-coded pressure indicators. Identify sensitive habitats, restricted zones, and alternative routes.</div>
+      </a>
+      <a href="artisans.html" class="feature-card" style="text-decoration:none;color:inherit">
+        <div class="feature-icon" aria-hidden="true">◆</div>
+        <div class="feature-title">Community Tourism</div>
+        <div class="feature-desc">AI-matched connections with Kutch artisans, craft workshops, eco-tours, and local community experiences that support livelihoods.</div>
+      </a>
+      <a href="admin.html" class="feature-card" style="text-decoration:none;color:inherit">
+        <div class="feature-icon" aria-hidden="true">▤</div>
+        <div class="feature-title">Authority Intelligence</div>
+        <div class="feature-desc">Government-grade command center with predictive analytics, AI briefings, alert management, and destination pressure monitoring.</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Challenge + AI Pipeline ── -->
+<section class="section container" aria-labelledby="problem-heading">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start" class="responsive-two-col">
+    <div>
+      <h2 id="problem-heading" style="font-size:1.4rem;margin-bottom:10px;color:var(--silver-bright)">The Kutch Challenge</h2>
+      <p style="color:var(--text-muted);margin-bottom:24px;font-size:0.88rem">Rann Utsav and seasonal tourism create extreme pressure on fragile ecosystems while local communities are often bypassed.</p>
+      <div class="eco-row">
+        <div class="eco-row-icon" aria-hidden="true">◉</div>
+        <div class="eco-row-content"><strong>Overcrowding at popular destinations</strong><span>White Rann at 88%+ capacity while nearby gems remain empty</span></div>
+      </div>
+      <div class="eco-row">
+        <div class="eco-row-icon" aria-hidden="true">◉</div>
+        <div class="eco-row-content"><strong>Ecological pressure</strong><span>Banni grasslands, flamingo habitats, and salt desert under stress</span></div>
+      </div>
+      <div class="eco-row">
+        <div class="eco-row-icon" aria-hidden="true">◉</div>
+        <div class="eco-row-content"><strong>Resource strain</strong><span>Water, waste management, and infrastructure at seasonal limits</span></div>
+      </div>
+      <div class="eco-row">
+        <div class="eco-row-icon" aria-hidden="true">◉</div>
+        <div class="eco-row-content"><strong>Artisan communities bypassed</strong><span>Local craft communities lose out to mass-tourism venues</span></div>
+      </div>
+    </div>
+
+    <div>
+      <h2 style="font-size:1.4rem;margin-bottom:10px;color:var(--silver-bright)">How AI Solves It</h2>
+      <p style="color:var(--text-muted);margin-bottom:24px;font-size:0.88rem">Agentic AI that intelligently routes tourists based on real capacity, ecology, and community data.</p>
+      <div class="flow-wrap" aria-label="AI pipeline flow">
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+          <div class="flow-step" style="width:100%;text-align:center">Tourist Query</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step blue" style="width:100%;text-align:center">AI Orchestrator — Intent Detection</div>
+          <div class="flow-arrow">↓</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%">
+            <div class="flow-step eco" style="text-align:center;font-size:0.73rem">Load Forecast Agent</div>
+            <div class="flow-step eco" style="text-align:center;font-size:0.73rem">Carrying Capacity Agent</div>
+            <div class="flow-step eco" style="text-align:center;font-size:0.73rem">Itinerary Agent</div>
+            <div class="flow-step eco" style="text-align:center;font-size:0.73rem">Community Agent</div>
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step blue" style="width:100%;text-align:center">IBM Granite LLM — Synthesis</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step eco" style="width:100%;text-align:center">Sustainable Recommendation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 5 Specialized Agents ── -->
+<section class="section section-alt" aria-labelledby="agents-heading">
+  <div class="container">
+    <div class="section-head" style="text-align:center;max-width:600px;margin:0 auto 40px">
+      <h2 id="agents-heading">5 Specialized AI Agents</h2>
+      <p>A multi-agent system — not just a chatbot. Each agent uses real platform data.</p>
+    </div>
+    <div class="card" style="max-width:860px;margin:0 auto">
+      <div style="display:flex;gap:16px;padding:16px 20px;border-bottom:1px solid var(--border);align-items:flex-start">
+        <div style="background:var(--eco);color:#080A0D;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.78rem;flex-shrink:0">1</div>
+        <div style="flex:1"><div style="font-weight:700;margin-bottom:3px;font-size:0.9rem;color:var(--text-primary)">Tourist Load Forecasting Agent</div><div style="font-size:0.81rem;color:var(--text-muted)">Predicts daily visitor arrivals using XGBoost with seasonal, event, and day-of-week features. Falls back to deterministic heuristic when no trained model exists.</div></div>
+        <span class="badge badge-predicted" style="flex-shrink:0">◈ PREDICTED</span>
+      </div>
+      <div style="display:flex;gap:16px;padding:16px 20px;border-bottom:1px solid var(--border);align-items:flex-start;background:var(--surface-elevated)">
+        <div style="background:var(--blue);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.78rem;flex-shrink:0">2</div>
+        <div style="flex:1"><div style="font-weight:700;margin-bottom:3px;font-size:0.9rem;color:var(--text-primary)">Sustainable Itinerary Agent</div><div style="font-size:0.81rem;color:var(--text-muted)">Generates personalized multi-day itineraries scored by crowd pressure, ecological sensitivity, community benefit, and tourist interests.</div></div>
+        <span class="badge badge-ai" style="flex-shrink:0">◈ AI</span>
+      </div>
+      <div style="display:flex;gap:16px;padding:16px 20px;border-bottom:1px solid var(--border);align-items:flex-start">
+        <div style="background:var(--eco);color:#080A0D;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.78rem;flex-shrink:0">3</div>
+        <div style="flex:1"><div style="font-weight:700;margin-bottom:3px;font-size:0.9rem;color:var(--text-primary)">Ecological Carrying Capacity Agent</div><div style="font-size:0.81rem;color:var(--text-muted)">Computes a configurable weighted pressure score (0–100) per destination. Automatically finds low-pressure alternatives when a destination is overloaded.</div></div>
+        <span class="badge badge-predicted" style="flex-shrink:0">◈ PREDICTED</span>
+      </div>
+      <div style="display:flex;gap:16px;padding:16px 20px;border-bottom:1px solid var(--border);align-items:flex-start;background:var(--surface-elevated)">
+        <div style="background:var(--blue);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.78rem;flex-shrink:0">4</div>
+        <div style="flex:1"><div style="font-weight:700;margin-bottom:3px;font-size:0.9rem;color:var(--text-primary)">Community Linkage Agent</div><div style="font-size:0.81rem;color:var(--text-muted)">Matches tourists with Kutch artisans, craft workshops, and eco-experiences using interest, budget, group size, and location scoring.</div></div>
+        <span class="badge badge-ai" style="flex-shrink:0">◈ AI</span>
+      </div>
+      <div style="display:flex;gap:16px;padding:16px 20px;align-items:flex-start">
+        <div style="background:var(--eco);color:#080A0D;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.78rem;flex-shrink:0">5</div>
+        <div style="flex:1"><div style="font-weight:700;margin-bottom:3px;font-size:0.9rem;color:var(--text-primary)">Tourism Impact Dashboard Agent</div><div style="font-size:0.81rem;color:var(--text-muted)">Aggregates all destination pressures, 30-day visitor trends, and generates IBM Granite-powered authority briefings for decision support.</div></div>
+        <span class="badge badge-predicted" style="flex-shrink:0">◈ PREDICTED</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Impact Section ── -->
+<section class="section container" aria-labelledby="impact-heading">
+  <div class="section-head" style="text-align:center;max-width:600px;margin:0 auto 40px">
+    <h2 id="impact-heading">Intelligence in Action</h2>
+    <p>Four pillars of sustainable tourism intelligence working in concert</p>
+  </div>
+  <div class="grid grid-4">
+    <div class="card">
+      <div class="card-body" style="text-align:center;padding:28px 20px">
+        <div style="width:44px;height:44px;background:var(--eco-dim);border:1px solid var(--eco-border);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.1rem;color:var(--eco)">◎</div>
+        <div style="font-weight:700;margin-bottom:8px;color:var(--silver)">Reduced Overcrowding</div>
+        <div style="font-size:0.81rem;color:var(--text-muted);line-height:1.6">AI redirects tourists to lower-pressure destinations before ecological thresholds are exceeded.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body" style="text-align:center;padding:28px 20px">
+        <div style="width:44px;height:44px;background:var(--blue-dim);border:1px solid var(--blue-border);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.1rem;color:var(--blue)">◆</div>
+        <div style="font-weight:700;margin-bottom:8px;color:var(--silver)">Local Community Support</div>
+        <div style="font-size:0.81rem;color:var(--text-muted);line-height:1.6">Tourism revenue distributed to artisans and local communities through intelligent matching and recommendations.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body" style="text-align:center;padding:28px 20px">
+        <div style="width:44px;height:44px;background:var(--eco-dim);border:1px solid var(--eco-border);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.1rem;color:var(--eco)">▲</div>
+        <div style="font-weight:700;margin-bottom:8px;color:var(--silver)">Ecological Protection</div>
+        <div style="font-size:0.81rem;color:var(--text-muted);line-height:1.6">Flamingo habitats, Banni grasslands, and salt desert protected through proactive capacity management.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body" style="text-align:center;padding:28px 20px">
+        <div style="width:44px;height:44px;background:var(--amber-dim);border:1px solid var(--amber-border);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.1rem;color:var(--amber)">▤</div>
+        <div style="font-weight:700;margin-bottom:8px;color:var(--silver)">Smarter Distribution</div>
+        <div style="font-size:0.81rem;color:var(--text-muted);line-height:1.6">Authorities receive predicted load data, AI-generated alerts, and recommended redistribution strategies.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="section section-alt" aria-labelledby="cta-heading">
+  <div class="container" style="text-align:center">
+    <div style="max-width:560px;margin:0 auto">
+      <h2 id="cta-heading" style="font-size:1.7rem;font-weight:900;margin-bottom:12px;color:var(--silver-bright)">Travel Kutch.<br>Protect Kutch.</h2>
+      <p style="color:var(--text-muted);margin-bottom:36px;font-size:0.95rem">
+        Let our Agentic AI design a sustainable experience that protects what you've come to see — and supports those who live there.
+      </p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <a href="planner.html" class="btn btn-primary btn-lg">Plan a 3-Day Eco Trip</a>
+        <a href="assistant.html" class="btn btn-outline btn-lg">Chat with AI</a>
+        <a href="admin.html" class="btn btn-ghost btn-lg">Authority Dashboard</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer style="background:var(--bg-deep);border-top:1px solid var(--border);padding:36px 0;text-align:center;font-size:0.79rem;color:var(--text-muted)" role="contentinfo">
+  <div class="container">
+    <div style="color:var(--eco);font-weight:800;font-size:0.9rem;margin-bottom:6px;letter-spacing:0.04em">RANN AI</div>
+    <div style="color:var(--text-muted);margin-bottom:4px;font-size:0.78rem">Intelligent Tourism · Sustainable Kutch</div>
+    <div style="margin-bottom:6px;color:var(--text-disabled)">Agentic AI · IBM Granite LLM · Machine Learning · FastAPI · Leaflet Maps</div>
+    <div style="color:var(--text-disabled)">All data is synthetic demo data — not official government or scientific data.</div>
+    <div style="border-top:1px solid var(--border);margin-top:20px;padding-top:16px;color:var(--text-disabled);font-size:0.73rem">Made with IBM Bob</div>
+  </div>
+</footer>
+
+<script src="src/api.js"></script>
+<script>
+// Mobile nav
+const navToggle = document.getElementById('nav-toggle');
+const navDrawer = document.getElementById('nav-drawer');
+if (navToggle && navDrawer) {
+  navToggle.addEventListener('click', () => {
+    const open = navDrawer.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Check backend health
+  try {
+    await API.health();
+    document.getElementById('nav-status-text').textContent = 'System Online';
+  } catch (e) {
+    document.getElementById('nav-status-text').textContent = 'Backend Offline';
+    const dot = document.querySelector('.nav-status-dot');
+    if (dot) dot.style.background = 'var(--red)';
+  }
+
+  // Load live stats
+  try {
+    const [dests, artisans, alerts, cc] = await Promise.allSettled([
+      API.getDestinations(),
+      API.getArtisans(),
+      API.getAlerts(),
+      API.getAllCC(),
+    ]);
+
+    if (dests.status === 'fulfilled' && Array.isArray(dests.value)) {
+      document.getElementById('stat-destinations').textContent = dests.value.length;
+    }
+    if (artisans.status === 'fulfilled' && Array.isArray(artisans.value)) {
+      document.getElementById('stat-artisans').textContent = artisans.value.length;
+    }
+    if (alerts.status === 'fulfilled' && Array.isArray(alerts.value)) {
+      document.getElementById('stat-alerts').textContent = alerts.value.filter(a => a.is_active).length;
+    }
+    if (cc.status === 'fulfilled' && Array.isArray(cc.value) && cc.value.length) {
+      const total = cc.value.reduce((s, c) => s + (c.tourist_load_pct || 0), 0);
+      const avg = Math.round(total / cc.value.length);
+      document.getElementById('stat-capacity').textContent = avg + '%';
+      const totalVisitors = cc.value.reduce((s, c) => s + (c.current_load || 0), 0);
+      document.getElementById('stat-visitors').textContent = formatNum(totalVisitors);
+    }
+  } catch (e) {
+    // Silently fail — stats are non-critical
+  }
+});
+</script>
+</body>
+</html>

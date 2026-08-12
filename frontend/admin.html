@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tourism Intelligence Command Center — RANN AI Authority</title>
+<link rel="stylesheet" href="public/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<style>
+  .admin-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+  .admin-right  { display: flex; flex-direction: column; gap: 16px; }
+  @media (max-width: 960px) { .admin-layout { grid-template-columns: 1fr; } }
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  @media (max-width: 680px) { .chart-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo-mark">R</div>
+      <div><div class="brand-name">RANN AI</div><div class="brand-sub">AUTHORITY INTELLIGENCE</div></div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Explore</a>
+      <a href="map.html">Live Map</a>
+      <a href="planner.html">Planner</a>
+      <a href="artisans.html">Community</a>
+      <a href="assistant.html">AI Chat</a>
+      <a href="admin.html" class="active">Authority</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user nav-user-name" id="nav-user-name"></span>
+      <a href="login.html" id="nav-login" class="btn-nav">Sign In</a>
+      <button id="nav-logout" class="btn-nav btn-nav-ghost" style="display:none">Sign Out</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="6" x2="20" y2="6"/><line x1="2" y1="11" x2="20" y2="11"/><line x1="2" y1="16" x2="20" y2="16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="nav-drawer" id="nav-drawer">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explore</a>
+    <a href="map.html">Live Map</a>
+    <a href="planner.html">Planner</a>
+    <a href="artisans.html">Community</a>
+    <a href="assistant.html">AI Chat</a>
+    <a href="admin.html" class="active">Authority</a>
+  </nav>
+</nav>
+
+<div class="page-wrap">
+  <div class="container">
+
+    <!-- Role notice -->
+    <div id="access-notice" style="display:none">
+      <div class="demo-notice" style="flex-direction:column;gap:8px;padding:18px;margin-bottom:20px">
+        <div style="font-size:0.95rem;font-weight:700;color:var(--amber)">Authority Access Required</div>
+        <div style="font-size:0.83rem">Full dashboard requires an authority or admin account. Showing public summary data.</div>
+        <div style="display:flex;gap:8px;margin-top:4px;align-items:center;flex-wrap:wrap">
+          <a href="login.html?next=admin.html" class="btn btn-primary btn-sm">Sign In as Authority</a>
+          <span style="font-size:0.78rem;color:var(--text-muted)">Demo: authority@kutchtourism.in / password123</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Critical alerts -->
+    <div id="alerts-section" class="alert-strip"></div>
+
+    <!-- Page header -->
+    <div class="page-hdr">
+      <div>
+        <h1>Tourism Intelligence Command Center</h1>
+        <p>Ecological carrying capacity, tourist load &amp; destination pressure monitoring.
+          <span class="badge badge-predicted">◈ PREDICTED</span>
+          <span class="demo-mode-badge">DEMO DATA</span>
+        </p>
+      </div>
+      <div class="page-hdr-actions">
+        <button id="refresh-btn" class="btn btn-secondary btn-sm">↻ Refresh</button>
+        <button id="ai-briefing-btn" class="btn btn-primary btn-sm">◈ AI Briefing</button>
+      </div>
+    </div>
+
+    <!-- KPI grid -->
+    <div class="kpi-grid" style="margin-bottom:24px" id="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Destinations</div>
+        <div class="kpi-value" id="kpi-dests">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Visitors Yesterday</div>
+        <div class="kpi-value" id="kpi-visitors">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Utilisation</div>
+        <div class="kpi-value" id="kpi-util">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">High / Critical</div>
+        <div class="kpi-value text-amber" id="kpi-overloaded">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Critical Zones</div>
+        <div class="kpi-value text-red" id="kpi-critical">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Active Alerts</div>
+        <div class="kpi-value text-amber" id="kpi-alerts">—</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-grid">
+      <div class="card">
+        <div class="card-header">
+          30-Day Visitor Trend
+          <span class="badge badge-demo">DEMO</span>
+        </div>
+        <div class="card-body">
+          <canvas id="trend-chart" height="170"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          Capacity Distribution
+          <span class="badge badge-predicted">◈ PREDICTED</span>
+        </div>
+        <div class="card-body">
+          <canvas id="cc-chart" height="170"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main layout -->
+    <div class="admin-layout">
+
+      <!-- Destination pressure table -->
+      <div class="card">
+        <div class="card-header">Destination Pressure Status</div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Destination</th>
+                <th class="col-num">Yesterday</th>
+                <th class="col-num">Capacity</th>
+                <th>CC Score</th>
+                <th>Pressure</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="dest-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)">
+                <span class="spinner"></span>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="admin-right">
+
+        <!-- AI briefing -->
+        <div class="card">
+          <div class="card-header">
+            AI Authority Briefing
+            <span class="badge badge-ai">◈ IBM Granite</span>
+          </div>
+          <div class="card-body">
+            <div id="ai-briefing-text"
+              style="font-size:0.82rem;line-height:1.7;color:var(--text-muted);white-space:pre-wrap;min-height:80px">
+              Click "AI Briefing" above to generate a natural-language authority summary using IBM Granite LLM.
+            </div>
+          </div>
+        </div>
+
+        <!-- Active alerts -->
+        <div class="card">
+          <div class="card-header">Active Alerts</div>
+          <div class="card-body" id="alert-cards" style="padding:14px 16px;font-size:0.82rem">
+            <div class="spinner"></div>
+          </div>
+        </div>
+
+        <!-- Decision support -->
+        <div class="card">
+          <div class="card-header">Decision Support</div>
+          <div class="card-body" id="decision-support" style="padding:14px 16px;font-size:0.82rem;color:var(--text-muted)">
+            Loading recommendations…
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="demo-notice" style="margin-top:20px">
+      <span>⬡</span>
+      <span>All visitor counts, utilisation percentages, and carrying capacity scores are <strong>model estimates based on synthetic demo data</strong>.
+      They do not represent official government statistics or scientifically validated ecological limits.</span>
+    </div>
+
+  </div>
+</div>
+
+<script src="src/api.js"></script>
+<script>
+let trendChart = null, ccChart = null;
+
+// Mobile nav
+const nt = document.getElementById('nav-toggle'), nd = document.getElementById('nav-drawer');
+if (nt && nd) nt.addEventListener('click', () => nd.classList.toggle('open'));
+
+// Chart.js global dark theme defaults
+Chart.defaults.color = '#8B949E';
+Chart.defaults.borderColor = '#30363D';
+
+async function loadDashboard() {
+  let data, isFullAccess = false;
+  try {
+    data = await API.getDashboard();
+    isFullAccess = true;
+    document.getElementById('access-notice').style.display = 'none';
+  } catch(e) {
+    if (e.message.includes('401') || e.message.includes('403') || e.message.includes('permission')) {
+      document.getElementById('access-notice').style.display = 'block';
+      try { data = await API.getDashboardPublic(); }
+      catch(e2) {
+        document.getElementById('dest-tbody').innerHTML =
+          `<tr><td colspan="6" style="color:var(--red);padding:16px">${e2.message}</td></tr>`;
+        return;
+      }
+    } else {
+      document.getElementById('dest-tbody').innerHTML =
+        `<tr><td colspan="6" style="color:var(--red);padding:16px">Error: ${e.message}</td></tr>`;
+      return;
+    }
+  }
+
+  try {
+    const s = data.summary || {};
+
+    // KPIs
+    document.getElementById('kpi-dests').textContent     = s.total_active_destinations ?? '—';
+    document.getElementById('kpi-visitors').textContent  = formatNum(s.total_visitors_yesterday);
+    document.getElementById('kpi-util').textContent      = s.overall_utilization_pct != null ? s.overall_utilization_pct + '%' : '—';
+    document.getElementById('kpi-overloaded').textContent= s.overloaded_destinations ?? '—';
+    document.getElementById('kpi-critical').textContent  = s.critical_destinations ?? '—';
+    document.getElementById('kpi-alerts').textContent    = s.active_alerts ?? '—';
+
+    // Alert banners
+    const alerts = await API.getAlerts();
+    const critAlerts = alerts.filter(a => a.is_active && a.severity === 'critical');
+    document.getElementById('alerts-section').innerHTML = critAlerts.map(a =>
+      `<div class="alert-item alert-critical">
+        <div class="alert-icon">▼</div>
+        <div class="alert-content">
+          <div class="alert-title">${a.title}</div>
+          <div class="alert-msg">${a.message}</div>
+        </div>
+      </div>`
+    ).join('');
+
+    // Destination table
+    const pressures = data.destination_pressures || [];
+    document.getElementById('dest-tbody').innerHTML = pressures.length
+      ? pressures.map(d => `
+        <tr>
+          <td>
+            <strong style="color:var(--text-primary)">${d.name}</strong>
+            <div style="font-size:0.72rem;color:var(--text-muted)">${d.category}</div>
+          </td>
+          <td class="col-num">${formatNum(d.actual_yesterday)}</td>
+          <td class="col-num">
+            ${formatNum(d.capacity)}
+            <div style="font-size:0.72rem;color:${pctColor(d.utilization_pct)}">${d.utilization_pct}%</div>
+          </td>
+          <td>
+            <strong style="color:var(--text-primary)">${d.cc_score?.toFixed(0)}/100</strong>
+            ${scoreMeter(d.cc_score)}
+          </td>
+          <td>${pressureBadge(d.pressure_level)}</td>
+          <td><span style="font-size:0.75rem;color:var(--text-muted)">${d.status}</span></td>
+        </tr>`)
+        .join('')
+      : '<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--text-muted)">No data available</td></tr>';
+
+    // Alert cards (right column)
+    document.getElementById('alert-cards').innerHTML = alerts.filter(a => a.is_active).length
+      ? alerts.filter(a => a.is_active).map(a => {
+          const c = a.severity === 'critical' ? 'var(--red)' : a.severity === 'warning' ? 'var(--amber)' : 'var(--blue)';
+          return `<div style="margin-bottom:8px;padding:9px 12px;background:var(--surface);border-radius:var(--radius-sm);border-left:3px solid ${c}">
+            <div style="font-weight:700;font-size:0.79rem;color:var(--text-primary)">${a.title}</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px">${(a.message||'').substring(0,100)}${a.message?.length > 100 ? '…' : ''}</div>
+          </div>`;
+        }).join('')
+      : '<div style="color:var(--eco)">● No active alerts</div>';
+
+    // Decision support
+    const highPressure = pressures.filter(d => d.pressure_level === 'high' || d.pressure_level === 'critical');
+    document.getElementById('decision-support').innerHTML = highPressure.length
+      ? `<div style="margin-bottom:8px;color:var(--text-primary)"><strong>${highPressure.length} destination${highPressure.length !== 1 ? 's' : ''} need attention:</strong></div>` +
+        highPressure.map(d => `
+          <div class="pressure-row ${d.pressure_level}">
+            <div>
+              <div style="font-weight:600;font-size:0.82rem;color:var(--text-primary)">${d.name}</div>
+              <div style="font-size:0.74rem;color:var(--text-muted)">${d.utilization_pct}% capacity · CC: ${d.cc_score?.toFixed(0)}</div>
+            </div>
+            ${pressureBadge(d.pressure_level)}
+          </div>`).join('')
+      : '<div style="color:var(--eco)">● All destinations within normal capacity range.</div>';
+
+    // Trend chart
+    const trend = (data.trend_30_days || []).slice(-30);
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(document.getElementById('trend-chart'), {
+      type: 'line',
+      data: {
+        labels: trend.map(t => t.date?.substring(5) || ''),
+        datasets: [{
+          label: 'Daily Visitors',
+          data: trend.map(t => t.visitors),
+          borderColor: '#42D392',
+          backgroundColor: 'rgba(66,211,146,0.08)',
+          fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: false, grid: { color: '#1E2329' }, ticks: { font: { size: 11 } } },
+          x: { grid: { color: '#1E2329' }, ticks: { font: { size: 10 } } }
+        },
+        responsive: true, maintainAspectRatio: true,
+      }
+    });
+
+    // CC distribution
+    const ccCounts = { low: 0, moderate: 0, high: 0, critical: 0 };
+    pressures.forEach(d => { ccCounts[d.pressure_level] = (ccCounts[d.pressure_level] || 0) + 1; });
+    if (ccChart) ccChart.destroy();
+    ccChart = new Chart(document.getElementById('cc-chart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Low', 'Moderate', 'High', 'Critical'],
+        datasets: [{
+          data: [ccCounts.low, ccCounts.moderate, ccCounts.high, ccCounts.critical],
+          backgroundColor: ['#42D392', '#F5B942', '#F5B942', '#FF5C5C'],
+          borderWidth: 2, borderColor: '#20252B',
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: true,
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, color: '#8B949E', padding: 12 } } },
+      }
+    });
+
+  } catch(e) {
+    document.getElementById('dest-tbody').innerHTML =
+      `<tr><td colspan="6" style="color:var(--red);padding:16px">Error rendering dashboard: ${e.message}</td></tr>`;
+  }
+}
+
+document.getElementById('refresh-btn').addEventListener('click', loadDashboard);
+
+document.getElementById('ai-briefing-btn').addEventListener('click', async () => {
+  const el = document.getElementById('ai-briefing-text');
+  el.innerHTML = '<span class="spinner spinner-sm"></span> <span style="color:var(--text-muted)">Generating IBM Granite briefing…</span>';
+  try {
+    const res = await API.getDashboardSummary();
+    const text = res.summary?.text || res.summary?.content || JSON.stringify(res.summary);
+    el.textContent = text;
+    el.style.color = 'var(--text-secondary)';
+  } catch(e) {
+    if (e.message.includes('401') || e.message.includes('403') || e.message.includes('permission')) {
+      el.textContent = 'Authority login required for AI briefing.';
+    } else {
+      el.textContent = 'Error: ' + e.message;
+    }
+    el.style.color = 'var(--red)';
+  }
+});
+
+loadDashboard();
+</script>
+</body>
+</html>

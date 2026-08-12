@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community & Artisans — RANN AI</title>
+<link rel="stylesheet" href="public/styles.css">
+<style>
+  @media (max-width: 860px) {
+    .match-form-grid { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 640px) {
+    .match-form-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="main-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo-mark">R</div>
+      <div><div class="brand-name">RANN AI</div><div class="brand-sub">INTELLIGENT TOURISM</div></div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Overview</a>
+      <a href="dashboard.html">Explore</a>
+      <a href="map.html">Live Map</a>
+      <a href="planner.html">Trip Planner</a>
+      <a href="artisans.html" class="active">Community</a>
+      <a href="assistant.html">AI Assistant</a>
+      <a href="admin.html" class="nav-admin-link" style="display:none">Authority</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user nav-user-name" id="nav-user-name"></span>
+      <a href="login.html" id="nav-login" class="btn-nav">Sign In</a>
+      <button id="nav-logout" class="btn-nav btn-nav-ghost" style="display:none">Sign Out</button>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="6" x2="20" y2="6"/><line x1="2" y1="11" x2="20" y2="11"/><line x1="2" y1="16" x2="20" y2="16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="nav-drawer" id="nav-drawer">
+    <a href="index.html">Overview</a>
+    <a href="dashboard.html">Explore</a>
+    <a href="map.html">Live Map</a>
+    <a href="planner.html">Trip Planner</a>
+    <a href="artisans.html" class="active">Community</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="admin.html" class="nav-admin-link" style="display:none">Authority</a>
+  </nav>
+</nav>
+
+<div class="page-wrap">
+  <div class="container">
+
+    <div class="page-hdr">
+      <div>
+        <h1>Community & Artisan Experiences</h1>
+        <p>Connect directly with Kutch artisans, craft workshops, eco-tours, and community-led experiences.
+          Every visit supports local livelihoods.
+          <span class="badge badge-demo">○ DEMO DATA</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Impact banner -->
+    <div style="background:var(--eco-dim);border:1px solid var(--eco-border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px">
+      <div style="font-size:1.4rem;color:var(--eco)">◆</div>
+      <div>
+        <div style="font-weight:700;color:var(--eco);margin-bottom:3px">Your visit supports local communities</div>
+        <div style="font-size:0.82rem;color:var(--text-muted)">Tourism revenue distributed directly to Kutch artisans and village communities through AI-matched experiences.</div>
+      </div>
+    </div>
+
+    <!-- AI Match Engine -->
+    <div class="card" style="margin-bottom:28px">
+      <div class="card-header">
+        AI Community Match Engine
+        <span class="badge badge-ai">◈ AI</span>
+      </div>
+      <div class="card-body">
+        <div class="match-form-grid" style="display:grid;grid-template-columns:1fr 1fr 130px auto;gap:14px;align-items:end">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Your Interests</label>
+            <div class="tag-group" id="match-interests">
+              <span class="tag-pill active" data-val="culture">Culture</span>
+              <span class="tag-pill active" data-val="handicraft">Handicraft</span>
+              <span class="tag-pill" data-val="nature">Nature</span>
+              <span class="tag-pill" data-val="heritage">Heritage</span>
+              <span class="tag-pill" data-val="wildlife">Wildlife</span>
+            </div>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Budget</label>
+            <select id="match-budget" class="form-control form-select">
+              <option value="budget">Budget</option>
+              <option value="moderate" selected>Moderate</option>
+              <option value="luxury">Luxury</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Group</label>
+            <input type="number" id="match-group" class="form-control" value="4" min="1" max="30">
+          </div>
+          <button id="match-btn" class="btn btn-primary" style="white-space:nowrap">Find Matches</button>
+        </div>
+        <div id="match-results" style="margin-top:18px"></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab-artisans">All Artisans</button>
+      <button class="tab-btn" data-tab="tab-experiences">All Experiences</button>
+    </div>
+
+    <div id="tab-artisans" class="tab-panel active">
+      <div class="grid grid-3" id="artisans-grid">
+        <div class="loading-overlay" style="grid-column:1/-1">
+          <div class="spinner spinner-lg"></div>
+          <div class="loading-text">Loading artisans…</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-experiences" class="tab-panel">
+      <div id="experiences-list">
+        <div class="loading-overlay">
+          <div class="spinner spinner-lg"></div>
+          <div class="loading-text">Loading experiences…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-notice" style="margin-top:24px">
+      <span>⬡</span>
+      <span>All artisan data is <strong>synthetic demo data</strong>. Never fabricated earnings or availability. Always contact artisans directly to verify.</span>
+    </div>
+
+  </div>
+</div>
+
+<script src="src/api.js"></script>
+<script>
+// Mobile nav
+const nt = document.getElementById('nav-toggle'), nd = document.getElementById('nav-drawer');
+if (nt && nd) nt.addEventListener('click', () => nd.classList.toggle('open'));
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Interest tags
+document.querySelectorAll('#match-interests .tag-pill').forEach(t =>
+  t.addEventListener('click', () => t.classList.toggle('active'))
+);
+
+const ARTISAN_ICONS = {
+  'Embroidery': '◈', 'Weaving': '◆', 'Performing Arts': '♫',
+  'Block Printing': '▦', 'Textile': '▣', 'Mud Art': '◎',
+  'Craft / Heritage': '◉', 'Eco Guide': '▲',
+};
+
+async function loadArtisans() {
+  try {
+    const artisans = await API.getArtisans();
+    if (!artisans.length) {
+      document.getElementById('artisans-grid').innerHTML =
+        '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text-muted)">No artisans found.</div>';
+      return;
+    }
+    document.getElementById('artisans-grid').innerHTML = artisans.map(a => `
+      <div class="artisan-card animate-in">
+        <div class="artisan-card-head">
+          <div class="artisan-card-icon">${ARTISAN_ICONS[a.category] || '◆'}</div>
+          <div class="artisan-card-name">${a.name}</div>
+          <div class="artisan-card-cat">${a.category}</div>
+        </div>
+        <div class="artisan-card-body">
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px">◎ ${a.location}</div>
+          <div style="font-size:0.81rem;margin-bottom:7px;color:var(--text-secondary);line-height:1.55">${a.bio || ''}</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;font-style:italic">${a.speciality || ''}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div style="display:flex;align-items:center;gap:4px;font-size:0.82rem">
+              <span style="color:var(--amber)">★</span>
+              <strong style="color:var(--text-primary)">${a.rating}/5.0</strong>
+            </div>
+            ${dataLabelBadge('DEMO')}
+          </div>
+          ${a.is_available
+            ? '<div style="font-size:0.74rem;color:var(--eco);margin-top:6px">● Currently available</div>'
+            : '<div style="font-size:0.74rem;color:var(--text-muted);margin-top:6px">○ Availability varies</div>'}
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    showError('artisans-grid', e.message);
+  }
+}
+
+async function loadExperiences() {
+  try {
+    const exps = await API.getExperiences();
+    if (!exps.length) {
+      document.getElementById('experiences-list').innerHTML =
+        '<div style="text-align:center;padding:40px;color:var(--text-muted)">No experiences found.</div>';
+      return;
+    }
+    document.getElementById('experiences-list').innerHTML =
+      `<div class="grid grid-3">` +
+      exps.map(e => `
+        <div class="card animate-in">
+          <div class="card-header" style="font-size:0.86rem">${e.title}</div>
+          <div class="card-body">
+            <div style="font-size:0.79rem;color:var(--eco);margin-bottom:3px">${ARTISAN_ICONS[e.artisan_category] || '◆'} ${e.artisan_name}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px">◎ ${e.artisan_location}</div>
+            ${e.artisan_rating ? `<div style="font-size:0.79rem;margin-bottom:8px;color:var(--text-secondary)"><span style="color:var(--amber)">★</span> ${e.artisan_rating}/5.0</div>` : ''}
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+              <div class="dest-stat-item">
+                <div class="dest-stat-label">Price</div>
+                <div class="dest-stat-val">₹${e.price_per_person}</div>
+              </div>
+              <div class="dest-stat-item">
+                <div class="dest-stat-label">Duration</div>
+                <div class="dest-stat-val">${e.duration_hours}h</div>
+              </div>
+            </div>
+            <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:5px">Max ${e.max_capacity} guests</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px">${(e.languages || []).join(', ')}</div>
+            ${dataLabelBadge('DEMO')}
+          </div>
+        </div>`).join('') + '</div>';
+  } catch(e) {
+    showError('experiences-list', e.message);
+  }
+}
+
+document.getElementById('match-btn').addEventListener('click', async () => {
+  const interests  = [...document.querySelectorAll('#match-interests .tag-pill.active')].map(t => t.dataset.val);
+  const budget     = document.getElementById('match-budget').value;
+  const groupSize  = parseInt(document.getElementById('match-group').value);
+  const el = document.getElementById('match-results');
+  el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--text-muted)"><span class="spinner spinner-sm"></span> Finding best matches…</div>';
+  try {
+    const res = await API.matchCommunity({ interests, budget, group_size: groupSize });
+    const matches = res.matched_experiences || [];
+    if (!matches.length) {
+      el.innerHTML = '<div style="color:var(--text-muted)">No matches found for the selected interests and budget. Try different interests.</div>';
+      return;
+    }
+    el.innerHTML =
+      `<div style="margin-bottom:12px;font-size:0.87rem"><strong style="color:var(--eco)">● ${res.message}</strong></div>` +
+      `<div class="grid grid-3">` +
+      matches.map(m => `
+        <div style="border:1px solid ${m.match_score > 70 ? 'var(--eco-border)' : 'var(--border)'};border-radius:var(--radius-lg);padding:16px;background:var(--card)">
+          <div style="font-weight:700;margin-bottom:3px;color:var(--text-primary)">${m.title}</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px">${m.artisan_name} · ◎ ${m.artisan_location}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div style="font-size:1rem;font-weight:800;color:var(--eco)">${m.match_score}%</div>
+            <div class="match-bar"><div class="match-fill" style="width:${m.match_score}%"></div></div>
+          </div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px">${(m.match_reasons || []).join(' · ')}</div>
+          <div style="font-size:0.81rem;margin-bottom:8px;color:var(--text-secondary)">₹${m.price_per_person}/person &nbsp;·&nbsp; ${m.duration_hours}h</div>
+          <span class="badge badge-ai">◈ AI Match</span>
+        </div>`).join('') + '</div>';
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--red);font-size:0.84rem">Error: ${e.message}</div>`;
+  }
+});
+
+loadArtisans();
+loadExperiences();
+</script>
+</body>
+</html>
